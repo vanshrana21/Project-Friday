@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Authentic Med Finder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header class="navbar">
+    <div class="nav-content">
+      <div class="logo">
+        <span class="logo-icon">💊</span>
+        <span>Authentic Med Finder</span>
+      </div>
+      <p class="tagline">Verify • Locate • Trust Your Medicine</p>
+    </div>
+  </header>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <span class="stat-value" id="totalScans">0</span>
+      <span class="stat-label">Total Scans</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value" id="verifiedMeds">0</span>
+      <span class="stat-label">Verified Meds</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value" id="nearbyPharmacies">0</span>
+      <span class="stat-label">Pharmacies</span>
+    </div>
+  </div>
+
+  <main class="container">
+    <!-- Scanner Card -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-icon">🔍</div>
+        <h2>Scan Medicine</h2>
+      </div>
+
+      <div id="qr-reader"></div>
+
+      <div class="controls">
+        <button id="startScanBtn" class="btn primary">
+          <span>📸</span> Start Scan
+        </button>
+        <button id="stopScanBtn" class="btn danger" disabled>
+          <span>⏹️</span> Stop Scan
+        </button>
+        <button id="manualBtn" class="btn outline">
+          <span>⌨️</span> Manual Entry
+        </button>
+      </div>
+
+      <div id="manualEntry" class="manual-entry hidden">
+        <div class="input-group">
+          <label class="input-label">Enter Batch Code or QR Code</label>
+          <div class="manual-entry-content">
+            <input id="manualCode" placeholder="e.g., MED123456" />
+            <button id="manualCheckBtn" class="btn primary small">Check</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="scanStatus" class="status-badge idle">
+        <span>⚪</span> Ready to scan
+      </div>
+    </section>
+
+    <!-- Verification Result Card -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-icon">🧾</div>
+        <h2>Verification Result</h2>
+      </div>
+      <div id="resultBox">
+        <p class="placeholder">Scan or enter a code to verify medicine authenticity</p>
+      </div>
+    </section>
+
+    <!-- Nearby Pharmacies Card -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-icon">🏥</div>
+        <h2>Nearby Pharmacies</h2>
+      </div>
+      <div id="pharmList">
+        <div class="spinner"></div>
+      </div>
+      <button id="refreshPharm" class="btn outline small">
+        <span>🔄</span> Refresh List
+      </button>
+    </section>
+
+    <!-- Report Suspicious Medicine Card -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-icon">⚠️</div>
+        <h2>Report Suspicious Medicine</h2>
+      </div>
+      
+      <div class="input-group">
+        <label class="input-label">Batch/QR Code</label>
+        <input id="reportCode" placeholder="Enter batch code" />
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Medicine Name (Optional)</label>
+        <input id="reportName" placeholder="e.g., Paracetamol 500mg" />
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Describe the Issue</label>
+        <textarea id="reportComment" placeholder="Please provide details about why this medicine seems suspicious..."></textarea>
+      </div>
+
+      <button id="submitReportBtn" class="btn warning">
+        <span>📤</span> Submit Report
+      </button>
+      <p id="reportStatus" class="status-badge idle" style="display:none; margin-top: 1rem;"></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Authentic Med Finder | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+    <p style="margin-top: 0.5rem; font-size: 0.8125rem;">Helping you verify medicine authenticity and find trusted pharmacies</p>
+  </footer>
+
+  <!-- ✅ Load QR Scanner from JSDELIVR (more reliable) -->
+  <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  
+  <!-- ✅ Load app after library -->
+  <script src="./app.js"></script>
+</body>
+</html>
