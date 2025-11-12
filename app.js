@@ -393,3 +393,19 @@ function initializeApp() {
   console.log("✅ App fully initialized and ready!");
   console.log("📸 Click 'Start Scan' to test camera");
 }
+/* 🌙 Dark Mode Toggle Logic */
+const toggleBtn = document.getElementById("darkModeToggle");
+if (toggleBtn) {
+  // Restore previous preference
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark");
+    toggleBtn.textContent = "☀️ Light Mode";
+  }
+
+  toggleBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    const isDark = document.body.classList.contains("dark");
+    toggleBtn.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  });
+}

@@ -615,37 +615,73 @@ footer a:hover {
     width: 100%;
   }
 }
-/* 🌙 Dark Mode Styles */
+/* 🌙 Enhanced Dark Mode Styles */
 body.dark {
-  background: #121212;
-  color: #f0f0f0;
-  transition: background 0.3s, color 0.3s;
+  background: #0f0f10;
+  color: #f9f9f9;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 body.dark .navbar {
-  background: linear-gradient(90deg, #1a1a1a, #333);
-  color: #fff;
+  background: linear-gradient(90deg, #1a1a1a, #222);
+  color: #ffffff;
+}
+
+body.dark .stats-bar {
+  background: #1b1b1b;
+  color: #e8e8e8;
+  border-bottom: 1px solid #333;
+}
+
+body.dark .stat-value {
+  color: #61dafb;
 }
 
 body.dark .card {
-  background: #1e1e1e;
-  color: #eee;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.08);
+  background: #1a1a1a;
+  color: #f0f0f0;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+  border: 1px solid #2a2a2a;
+}
+
+body.dark .card h2,
+body.dark .card-icon {
+  color: #66b3ff;
 }
 
 body.dark input,
 body.dark textarea {
-  background: #2b2b2b;
-  border: 1px solid #555;
-  color: #fff;
+  background: #242424;
+  border: 1px solid #444;
+  color: #f0f0f0;
 }
 
 body.dark .btn {
-  opacity: 0.95;
+  opacity: 1;
+}
+
+body.dark .btn.primary {
+  background: #4c8bfd;
+  color: white;
+}
+
+body.dark .btn.danger {
+  background: #ff4c4c;
+  color: white;
+}
+
+body.dark .btn.outline {
+  border: 1px solid #4c8bfd;
+  color: #4c8bfd;
+}
+
+body.dark .btn.warning {
+  background: #fbbc05;
+  color: #111;
 }
 
 body.dark footer {
-  background: #1a1a1a;
+  background: #121212;
   color: #bbb;
 }
 
@@ -658,7 +694,7 @@ body.dark footer {
   border-radius: 50px;
   font-size: 0.9rem;
   padding: 10px 15px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
   z-index: 1000;
   cursor: pointer;
   transition: 0.3s;
@@ -669,6 +705,55 @@ body.dark footer {
 }
 
 body.dark .btn.toggle {
-  background: #eee;
+  background: #f0f0f0;
   color: #111;
+}
+body.dark p,
+body.dark label,
+body.dark .placeholder {
+  color: #d0d0d0;
+}
+
+/* End of Dark Mode Styles */
+/* 🎥 Scanner Loading Spinner */
+.qr-box {
+  position: relative;
+  width: 100%;
+  min-height: 250px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+body.dark .qr-box {
+  background: #151515;
+}
+
+.spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(100, 100, 255, 0.2);
+  border-top-color: #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  z-index: 10;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@keyframes spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Optional: slight glow around QR box while scanning */
+body.scanning #qr-reader {
+  box-shadow: 0 0 15px rgba(0, 123, 255, 0.6);
+  transition: box-shadow 0.3s ease;
 }
