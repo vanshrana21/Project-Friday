@@ -1,19 +1,19 @@
-// app.js — Authentic Med Finder (Standalone version)
+// app.js — Authentic Med Finder (Enhanced Version)
 console.log("✅ App.js loading...");
 
 // Wait for both DOM and QR library to load
-window.addEventListener('load', function() {
+window.addEventListener("load", function () {
   console.log("✅ Window loaded");
-  
+
   // Check if Html5Qrcode is available
-  if (typeof Html5Qrcode === 'undefined') {
+  if (typeof Html5Qrcode === "undefined") {
     console.error("❌ Html5Qrcode library not loaded!");
     alert("ERROR: QR Scanner library failed to load. Please check your internet connection and refresh the page.");
     return;
   }
-  
+
   console.log("✅ Html5Qrcode library confirmed available");
-  
+
   // Initialize the app
   initializeApp();
 });
@@ -37,6 +37,7 @@ function initializeApp() {
   const reportName = document.getElementById("reportName");
   const reportComment = document.getElementById("reportComment");
   const reportStatus = document.getElementById("reportStatus");
+  const scanSpinner = document.getElementById("scanSpinner");
 
   // Stats
   let totalScans = 0;
@@ -60,7 +61,7 @@ function initializeApp() {
   -------------------------- */
   startBtn.addEventListener("click", async () => {
     console.log("🎬 Start Scan clicked");
-    
+
     if (isScanning) {
       console.warn("⚠️ Already scanning");
       return;
@@ -71,47 +72,44 @@ function initializeApp() {
     startBtn.disabled = true;
     stopBtn.disabled = false;
 
+    // 🎥 Show spinner and glow effect
+    if (scanSpinner) scanSpinner.classList.remove("hidden");
+    document.body.classList.add("scanning");
+
     try {
-      // Create scanner instance
       if (!html5QrCode) {
         console.log("🔧 Creating Html5Qrcode instance...");
         html5QrCode = new Html5Qrcode("qr-reader");
       }
 
-      // Get cameras
-      console.log("📷 Getting cameras...");
       const cameras = await Html5Qrcode.getCameras();
-      
       if (!cameras || cameras.length === 0) {
         throw new Error("No camera found. Please check camera permissions.");
       }
 
       console.log(`✅ Found ${cameras.length} camera(s):`, cameras.map(c => c.label));
 
-      // Select camera (prefer back/rear camera)
       const backCam = cameras.find(c => {
         const label = c.label.toLowerCase();
         return label.includes("back") || label.includes("rear") || label.includes("environment");
       });
-      
+
       const selectedCamera = backCam || cameras[0];
       console.log("📸 Selected camera:", selectedCamera.label);
 
-      // Scanner configuration
-      const config = { 
+      const config = {
         fps: 30,
         qrbox: { width: 250, height: 250 },
         aspectRatio: 1.0,
-        disableFlip: false
+        disableFlip: false,
       };
 
-      // Start scanning
       await html5QrCode.start(
         selectedCamera.id,
         config,
         async (decodedText) => {
           console.log("✅ QR CODE SCANNED:", decodedText);
-          
+
           // Stop camera
           if (html5QrCode && isScanning) {
             try {
@@ -124,19 +122,23 @@ function initializeApp() {
             startBtn.disabled = false;
             stopBtn.disabled = true;
           }
-          
+
+          // Hide spinner
+          if (scanSpinner) scanSpinner.classList.add("hidden");
+          document.body.classList.remove("scanning");
+
           // Update UI
           scanStatus.className = "status-badge success";
           scanStatus.innerHTML = `✅ Scanned: ${decodedText.substring(0, 25)}...`;
-          
+
           totalScans++;
           updateStats();
-          
+
           // Show result
           verifyMedicine(decodedText);
         },
         (errorMessage) => {
-          // Ignore scanning errors (too verbose)
+          // Ignore scan errors
         }
       );
 
@@ -144,7 +146,6 @@ function initializeApp() {
       scanStatus.className = "status-badge scanning";
       scanStatus.innerHTML = "📷 Camera active - Point at QR code";
       console.log("✅ Camera started successfully!");
-      
     } catch (err) {
       console.error("❌ Camera error:", err);
       scanStatus.className = "status-badge error";
@@ -152,7 +153,11 @@ function initializeApp() {
       startBtn.disabled = false;
       stopBtn.disabled = true;
       isScanning = false;
-      
+
+      // Hide spinner
+      if (scanSpinner) scanSpinner.classList.add("hidden");
+      document.body.classList.remove("scanning");
+
       showToast(`Camera Error: ${err.message}`, "error");
     }
   });
@@ -162,7 +167,7 @@ function initializeApp() {
   -------------------------- */
   stopBtn.addEventListener("click", async () => {
     console.log("⏹️ Stop button clicked");
-    
+
     try {
       if (html5QrCode && isScanning) {
         await html5QrCode.stop();
@@ -177,7 +182,11 @@ function initializeApp() {
       scanStatus.className = "status-badge idle";
       scanStatus.innerHTML = "⚠️ Camera stopped (with warning)";
     }
-    
+
+    // Hide spinner and glow
+    if (scanSpinner) scanSpinner.classList.add("hidden");
+    document.body.classList.remove("scanning");
+
     startBtn.disabled = false;
     stopBtn.disabled = true;
   });
@@ -186,7 +195,6 @@ function initializeApp() {
       MANUAL ENTRY
   -------------------------- */
   manualBtn.addEventListener("click", () => {
-    console.log("⌨️ Manual entry toggled");
     manualEntry.classList.toggle("hidden");
     if (!manualEntry.classList.contains("hidden")) {
       manualCode.focus();
@@ -199,7 +207,6 @@ function initializeApp() {
       showToast("Please enter a batch code", "error");
       return;
     }
-    console.log("🔍 Manual check:", code);
     totalScans++;
     updateStats();
     verifyMedicine(code);
@@ -215,8 +222,6 @@ function initializeApp() {
       VERIFY MEDICINE
   -------------------------- */
   function verifyMedicine(code) {
-    console.log("🔍 Verifying medicine:", code);
-    
     resultBox.innerHTML = `
       <div class="spinner"></div>
       <p style="text-align: center; margin-top: 1rem; color: var(--text-light);">
@@ -224,68 +229,32 @@ function initializeApp() {
       </p>
     `;
 
-    // Simulate database check (replace with Firebase later)
     setTimeout(() => {
-      // For demo: codes starting with "MED" are valid
       const isValid = code.toUpperCase().startsWith("MED");
-      
+
       if (isValid) {
         verifiedMeds++;
         updateStats();
-        
+
         resultBox.innerHTML = `
-          <div class="result good">
+          <div class="result good fade-in">
             <strong>✅ Medicine Verified</strong>
             <div class="result-details">
-              <div class="result-detail">
-                <b>Batch Code:</b>
-                <span>${code}</span>
-              </div>
-              <div class="result-detail">
-                <b>Status:</b>
-                <span>Authentic (Demo Mode)</span>
-              </div>
-              <div class="result-detail">
-                <b>Name:</b>
-                <span>Sample Medicine</span>
-              </div>
-              <div class="result-detail">
-                <b>Company:</b>
-                <span>Sample Pharma Ltd.</span>
-              </div>
-              <div class="result-detail">
-                <b>Expiry:</b>
-                <span>Dec 2026</span>
-              </div>
+              <div><b>Batch Code:</b> ${code}</div>
+              <div><b>Status:</b> Authentic (Demo Mode)</div>
+              <div><b>Name:</b> Sample Medicine</div>
+              <div><b>Company:</b> Sample Pharma Ltd.</div>
+              <div><b>Expiry:</b> Dec 2026</div>
             </div>
-            <p style="margin-top: 1rem; font-size: 0.875rem; opacity: 0.8;">
-              ✅ Camera working! Next: Connect to Firebase for real medicine data.
-            </p>
           </div>
         `;
         showToast("✅ Medicine verified successfully!", "success");
       } else {
         resultBox.innerHTML = `
-          <div class="result bad">
+          <div class="result bad fade-in">
             <strong>⚠️ Medicine Not Verified</strong>
-            <div class="result-details">
-              <div class="result-detail">
-                <b>Code:</b>
-                <span>${code}</span>
-              </div>
-              <div class="result-detail">
-                <b>Status:</b>
-                <span>Not found in database</span>
-              </div>
-            </div>
-            <ul style="margin-top: 1rem; text-align: left;">
-              <li>This code was not found</li>
-              <li>May indicate counterfeit medicine</li>
-              <li>Consult a pharmacist before use</li>
-            </ul>
-            <p style="margin-top: 1rem; font-size: 0.875rem; opacity: 0.8;">
-              📝 Demo: Codes starting with "MED" are considered valid.
-            </p>
+            <p>Code: ${code}</p>
+            <p>Status: Not found in database</p>
           </div>
         `;
         showToast("⚠️ Medicine not found", "error");
@@ -297,22 +266,20 @@ function initializeApp() {
       LOAD PHARMACIES
   -------------------------- */
   function loadPharmacies() {
-    console.log("🏥 Loading pharmacies...");
     pharmList.innerHTML = '<div class="spinner"></div>';
-    
-    // Demo pharmacies (replace with Firebase)
+
     setTimeout(() => {
       const demoPharmacies = [
         { name: "City Pharmacy", address: "123 Main Street, Artist Village", phone: "+91 98765 43210", distance: "0.5 km" },
         { name: "HealthCare Plus", address: "456 Market Road, Artist Village", phone: "+91 98765 43211", distance: "1.2 km" },
-        { name: "MediStore", address: "789 Center Plaza, Artist Village", phone: "+91 98765 43212", distance: "2.0 km" }
+        { name: "MediStore", address: "789 Center Plaza, Artist Village", phone: "+91 98765 43212", distance: "2.0 km" },
       ];
-      
+
       pharmList.innerHTML = "";
       nearbyPharmaciesCount = demoPharmacies.length;
       updateStats();
-      
-      demoPharmacies.forEach(pharm => {
+
+      demoPharmacies.forEach((pharm) => {
         const div = document.createElement("div");
         div.className = "pharm";
         div.innerHTML = `
@@ -323,7 +290,7 @@ function initializeApp() {
         `;
         pharmList.appendChild(div);
       });
-      
+
       showToast(`Loaded ${nearbyPharmaciesCount} pharmacies`, "success");
     }, 500);
   }
@@ -345,26 +312,23 @@ function initializeApp() {
       return;
     }
 
-    console.log("📤 Submitting report:", { code, name, comment });
-
     submitReportBtn.disabled = true;
     submitReportBtn.innerHTML = '<span>⏳</span> Submitting...';
     reportStatus.style.display = "block";
     reportStatus.className = "status-badge scanning";
     reportStatus.innerHTML = "⏳ Submitting report...";
 
-    // Simulate submission
     setTimeout(() => {
       reportStatus.className = "status-badge success";
       reportStatus.innerHTML = "✅ Report submitted successfully! Thank you for helping keep medicines safe.";
-      
+
       reportCode.value = "";
       reportName.value = "";
       reportComment.value = "";
-      
+
       submitReportBtn.disabled = false;
       submitReportBtn.innerHTML = '<span>📤</span> Submit Report';
-      
+
       showToast("Report submitted successfully!", "success");
     }, 1500);
   });
@@ -389,14 +353,13 @@ function initializeApp() {
   -------------------------- */
   loadPharmacies();
   updateStats();
-  
+
   console.log("✅ App fully initialized and ready!");
-  console.log("📸 Click 'Start Scan' to test camera");
 }
+
 /* 🌙 Dark Mode Toggle Logic */
 const toggleBtn = document.getElementById("darkModeToggle");
 if (toggleBtn) {
-  // Restore previous preference
   if (localStorage.getItem("theme") === "dark") {
     document.body.classList.add("dark");
     toggleBtn.textContent = "☀️ Light Mode";
