@@ -1,0 +1,52 @@
+[
+  {
+    "id": "1",
+    "name": "City Pharmacy",
+    "address": "123 Main Street, Artist Village, Mumbai",
+    "phone": "+91 98765 43210",
+    "location": {
+      "latitude": 19.0760,
+      "longitude": 72.8777
+    }
+  },
+  {
+    "id": "2",
+    "name": "HealthCare Plus",
+    "address": "456 Market Road, Artist Village, Mumbai",
+    "phone": "+91 98765 43211",
+    "location": {
+      "latitude": 19.0800,
+      "longitude": 72.8800
+    }
+  },
+  {
+    "id": "3",
+    "name": "MediStore",
+    "address": "789 Center Plaza, Artist Village, Mumbai",
+    "phone": "+91 98765 43212",
+    "location": {
+      "latitude": 19.0850,
+      "longitude": 72.8850
+    }
+  },
+  {
+    "id": "4",
+    "name": "Apollo Pharmacy",
+    "address": "321 Ring Road, Andheri West, Mumbai",
+    "phone": "+91 98765 43213",
+    "location": {
+      "latitude": 19.1136,
+      "longitude": 72.8697
+    }
+  },
+  {
+    "id": "5",
+    "name": "Wellness Pharmacy",
+    "address": "555 Hill View, Bandra, Mumbai",
+    "phone": "+91 98765 43214",
+    "location": {
+      "latitude": 19.0596,
+      "longitude": 72.8295
+    }
+  }
+]
